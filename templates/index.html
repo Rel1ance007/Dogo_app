@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Generator</title>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            text-align: center; 
+            margin: 0;
+            padding: 40px 10px; 
+            background-color: #D2B48C; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Estilo das patas individuais */
+        .pata-animada {
+            position: fixed;
+            font-size: 80px; 
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            animation: aparecerSumi 3s ease-in-out forwards;
+        }
+
+        @keyframes aparecerSumi {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 0; transform: scale(1); }
+        }
+
+        .container { 
+            max-width: 700px; 
+            margin: auto; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
+            position: relative;
+            z-index: 2; 
+        }
+        
+        h1 { color: #5D4037; }
+
+        select, input { 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 8px; 
+            border: 2px solid #BC8F8F; 
+            width: 85%; 
+            font-size: 1.2rem;
+        }
+
+        /* Botão Principal */
+        button { 
+            padding: 15px 30px; 
+            background: #5D4037; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            font-size: 1.3rem; 
+            width: 85%;
+            margin-top: 10px;
+            animation: pular 1.5s infinite;
+        }
+
+        /* Botão de Adoção Real (Verde) */
+        .btn-adocao {
+            background: #917167 !important;
+            animation: none !important;
+            margin-top: 20px !important;
+            font-size: 1.1rem !important;
+        }
+
+        .btn-adocao:hover {
+            background: #5D4037 !important;
+        }
+
+        @keyframes pular {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        button:hover { background: #3E2723; animation: none; }
+
+        .card { margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px; }
+        
+        img { 
+            width: 100%; 
+            max-width: 500px; 
+            height: auto; 
+            border-radius: 15px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+            margin: 20px 0; 
+        }
+
+        .info { text-align: left; display: inline-block; width: 85%; font-size: 1.2rem; line-height: 1.6; }
+        .info strong { color: #5D4037; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🐾 Adota um Amigo</h1>
+        <form method="POST">
+            <input type="text" name="nome" placeholder="Escreve o teu nome aqui..." required>
+            <br>
+            <select name="tipo">
+                <option value="cao">Quero um Cão 🐶</option>
+                <option value="gato">Quero um Gato 🐱</option>
+            </select>
+            <br>
+            <button type="submit">Gerar Animal</button>
+        </form>
+
+        {% if pet %}
+        <div class="card">
+            <h2>Parabéns, {{ pet.dono }}!</h2>
+            <p>O teu novo {{ pet.tipo }} chama-se <strong>{{ pet.nome }}</strong></p>
+            <img src="{{ pet.foto }}" alt="Foto do Pet" onerror="this.src='https://placeholder.com'">
+            
+            <div class="info">
+                <p>🧬 <strong>Raça:</strong> {{ pet.raca }}</p>
+                <p>⚧ <strong>Sexo:</strong> {{ pet.sexo }}</p>
+                <p>🎨 <strong>Cor:</strong> {{ pet.cor }}</p>
+                <p>🎂 <strong>Idade:</strong> {{ pet.idade }}</p>
+                <p>✨ <strong>Personalidade:</strong> {{ pet.personalidade }}</p>
+            </div>
+
+            <!-- BOTÃO DE ADOÇÃO REAL -->
+            <div style="margin-top: 10px;">
+                <a href="{{ pet.link_adocao }}" target="_blank" style="text-decoration: none;">
+                    <button type="button" class="btn-adocao">
+                        🐾 Adotar um {{ pet.tipo }} real em Portugal
+                    </button>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function criarPata() {
+            const pata = document.createElement('div');
+            pata.className = 'pata-animada';
+            pata.innerText = '🐾';
+            
+            const x = Math.random() * (window.innerWidth - 100);
+            const y = Math.random() * (window.innerHeight - 100);
+            
+            pata.style.left = x + 'px';
+            pata.style.top = y + 'px';
+            pata.style.transform = `rotate(${Math.random() * 360}deg)`;
+
+            document.body.appendChild(pata);
+
+            setTimeout(() => {
+                pata.remove();
+            }, 3000);
+        }
+
+        setInterval(criarPata, 1000);
+    </script>
+
+</body>
+</html>
