@@ -4,43 +4,22 @@ import requests
 
 app = Flask(__name__)
 
-# Configuração com tradução para a API buscar a foto certa
+# Configuração original que confirmaste que funciona
 caes_config = {
-    "Labrador": "labrador",
-    "Pastor Alemão": "germanshepherd",
-    "Golden Retriever": "retriever/golden",
-    "Poodle": "poodle/standard",
-    "Beagle": "beagle",
-    "Pug": "pug",
-    "Boxer": "boxer",
-    "Chihuahua": "chihuahua",
-    "Doberman": "doberman",
-    "Bulldog": "bulldog",
-    "Yorkshire": "yorkshire",
-    "Shih Tzu": "shih",
-    "Rottweiler": "rottweiler",
-    "Dachshund": "dachshund",
-    "Schnauzer": "schnauzer",
-    "Border Collie": "collie/border"
+    "Labrador": "labrador", "Pastor Alemão": "germanshepherd",
+    "Golden Retriever": "retriever/golden", "Poodle": "poodle/standard",
+    "Beagle": "beagle", "Pug": "pug", "Boxer": "boxer",
+    "Chihuahua": "chihuahua", "Doberman": "doberman", "Bulldog": "bulldog",
+    "Yorkshire": "yorkshire", "Shih Tzu": "shih", "Rottweiler": "rottweiler",
+    "Dachshund": "dachshund", "Schnauzer": "schnauzer", "Border Collie": "collie/border"
 }
 
 gatos_config = {
-    "Siamês": "siam",
-    "Persa": "pers",
-    "Maine Coon": "mcoo",
-    "Bengal": "beng",
-    "Sphynx": "sphy",
-    "Ragdoll": "ragd",
-    "Siberiano": "sibe",
-    "Abissínio": "abys",
-    "Scottish Fold": "scot",
-    "British Shorthair": "bsho",
-    "Norwegian Forest": "norw",
-    "Devon Rex": "drex",
-    "Oriental": "orie",
-    "Russian Blue": "rblu",
-    "Egyptian Mau": "emau",
-    "Turkish Angora": "tang"
+    "Siamês": "siam", "Persa": "pers", "Maine Coon": "mcoo", "Bengal": "beng",
+    "Sphynx": "sphy", "Ragdoll": "ragd", "Siberiano": "sibe", "Abissínio": "abys",
+    "Scottish Fold": "scot", "British Shorthair": "bsho", "Norwegian Forest": "norw",
+    "Devon Rex": "drex", "Oriental": "orie", "Russian Blue": "rblu",
+    "Egyptian Mau": "emau", "Turkish Angora": "tang"
 }
 
 dados_gerais = {
@@ -62,6 +41,7 @@ def obter_foto(tipo, raca_pt):
             url = f"https://api.thecatapi.com/v1/images/search?breed_ids={raca_en}"
             res = requests.get(url).json()
             if res and len(res) > 0:
+                # Restaurado res[0] porque a API de gatos devolve uma lista
                 return res[0].get('url')
             return "https://placeholder.com"
     except Exception as e:
@@ -78,11 +58,9 @@ def home():
         if nome_usuario:
             sexo = random.choice(["Macho", "Fêmea"])
             nome_pet = random.choice(dados_gerais["nomes_m"] if sexo == "Macho" else dados_gerais["nomes_f"])
-            
             lista_racas = list(caes_config.keys()) if tipo_pet == 'cao' else list(gatos_config.keys())
             raca_escolhida = random.choice(lista_racas)
             
-            # Unifiquei todos os dados aqui para não perder informações
             pet = {
                 "dono": nome_usuario,
                 "tipo": "Cão" if tipo_pet == "cao" else "Gato",
@@ -93,11 +71,17 @@ def home():
                 "sexo": sexo,
                 "personalidade": random.choice(dados_gerais["personalidades"]),
                 "foto": obter_foto(tipo_pet, raca_escolhida),
-                # Links filtrados do Adopta-me (type 1 para cães, 2 para gatos)
-                "link_adocao": "https://adopta-me.org" if tipo_pet == "cao" else "https://adopta-me.org"
+                "link_adocao": "https://adopta-me.org"
             }
             
     return render_template('index.html', pet=pet)
+
+# ROTA PARA O JOGO NO BROWSER
+@app.route('/jogo')
+def jogo():
+    foto_url = request.args.get('url')
+    nome_pet = request.args.get('nome')
+    return render_template('jogo.html', foto_url=foto_url, nome_pet=nome_pet)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -68,16 +68,28 @@
             animation: pular 1.5s infinite;
         }
 
-        /* Botão de Adoção Real (Verde) */
-        .btn-adocao {
+        /* Botão de Adoção e Jogo */
+        .btn-secundario {
             background: #917167 !important;
             animation: none !important;
-            margin-top: 20px !important;
+            margin-top: 10px !important;
             font-size: 1.1rem !important;
+            display: inline-block;
+            width: 85%;
+            text-decoration: none;
+            color: white;
+            padding: 15px 0;
+            border-radius: 8px;
+            font-weight: bold;
         }
 
-        .btn-adocao:hover {
-            background: #5D4037 !important;
+        .btn-jogo {
+            background: #4CAF50 !important; /* Verde para destacar o jogo */
+        }
+
+        .btn-secundario:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
         }
 
         @keyframes pular {
@@ -131,12 +143,15 @@
                 <p>✨ <strong>Personalidade:</strong> {{ pet.personalidade }}</p>
             </div>
 
-            <!-- BOTÃO DE ADOÇÃO REAL -->
-            <div style="margin-top: 10px;">
-                <a href="{{ pet.link_adocao }}" target="_blank" style="text-decoration: none;">
-                    <button type="button" class="btn-adocao">
-                        🐾 Adotar um {{ pet.tipo }} real em Portugal
-                    </button>
+            <div style="margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                <!-- BOTÃO DE JOGO (NOVO) -->
+                <a href="/jogo?url={{ pet.foto }}" class="btn-secundario btn-jogo">
+                    🎮 Jogar com o(a) {{ pet.nome }}!
+                </a>
+
+                <!-- BOTÃO DE ADOÇÃO REAL -->
+                <a href="https://adopta-me.org" target="_blank" class="btn-secundario">
+                    🐾 Adotar um {{ pet.tipo }} real em Portugal
                 </a>
             </div>
         </div>

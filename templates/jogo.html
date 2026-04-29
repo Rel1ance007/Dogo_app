@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Corrida do {{ nome_pet }}</title>
+    <style>
+        body { text-align: center; background: #D2B48C; font-family: sans-serif; }
+        canvas { background: white; border: 4px solid #5D4037; border-radius: 10px; display: block; margin: 20px auto; }
+        .btn-voltar { padding: 10px 20px; background: #5D4037; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Saltos do {{ nome_pet }}!</h1>
+    <p>Pressiona <b>Espaço</b> ou <b>Clica</b> para saltar</p>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <br>
+    <a href="/" class="btn-voltar">Voltar ao Gerador</a>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Carregar imagem do Pet vinda do Flask
+        const imgPet = new Image();
+        imgPet.src = "{{ foto_url }}";
+
+        let pet = { x: 50, y: 340, w: 60, h: 60, dy: 0, jump: -12, grav: 0.6, grounded: false };
+        let obstaculos = [];
+        let ossos = [];
+        let score = 0;
+        let gameActive = true;
+
+        function draw() {
+            if (!gameActive) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Gravidade e Pulo
+            pet.dy += pet.grav;
+            pet.y += pet.dy;
+            if (pet.y > 340) { pet.y = 340; pet.dy = 0; pet.grounded = true; }
+
+            // Desenhar Pet (Imagem da API)
+            ctx.drawImage(imgPet, pet.x, pet.y, pet.w, pet.h);
+
+            // Gerar Obstáculos (Vermelhos)
+            if (Math.random() < 0.01) obstaculos.push({ x: 800, y: 360, w: 30, h: 40 });
+            
+            obstaculos.forEach((obs, i) => {
+                obs.x -= 6;
+                ctx.fillStyle = "red";
+                ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+
+                // Colisão
+                if (pet.x < obs.x + obs.w && pet.x + pet.w > obs.x && pet.y < obs.y + obs.h && pet.y + pet.h > obs.y) {
+                    gameActive = false;
+                    alert("Game Over! Pontos: " + score);
+                    location.reload();
+                }
+            });
+
+            // Gerar Ossos (Amarelos)
+            if (Math.random() < 0.005) ossos.push({ x: 800, y: 300, w: 20, h: 20 });
+            ossos.forEach((os, i) => {
+                os.x -= 6;
+                ctx.fillStyle = "gold";
+                ctx.beginPath();
+                ctx.arc(os.x, os.y, 10, 0, Math.PI*2);
+                ctx.fill();
+
+                if (pet.x < os.x + 20 && pet.x + pet.w > os.x && pet.y < os.y + 20 && pet.y + pet.h > os.y) {
+                    score++;
+                    ossos.splice(i, 1);
+                }
+            });
+
+            ctx.fillStyle = "black";
+            ctx.fillText("Ossos: " + score, 20, 30);
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener("keydown", (e) => {
+            if (e.code === "Space" && pet.grounded) { pet.dy = pet.jump; pet.grounded = false; }
+        });
+        
+        canvas.addEventListener("mousedown", () => {
+            if (pet.grounded) { pet.dy = pet.jump; pet.grounded = false; }
+        });
+
+        imgPet.onload = draw;
+    </script>
+</body>
+</html>
